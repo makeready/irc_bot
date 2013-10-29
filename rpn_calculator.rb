@@ -59,7 +59,7 @@ class RPNCalculator < Array
         begin
           executecommand(item)
         rescue Exception => emptymsg
-          return "Error evaluating command " + emptymsg.to_s
+          return "Error evaluating command, " + emptymsg.to_s
         end
       end
     end
