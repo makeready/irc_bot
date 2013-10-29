@@ -1,5 +1,6 @@
 require "socket"
 require "./rpn_calculator"
+require "./make_change"
 
 server = "chat.freenode.net"
 port = "6667"
@@ -23,11 +24,14 @@ until irc_server.eof? do
 
   if msg.include? greeting_prefix and wasGreeted
     command = msg[msg.index(" :")+11..-1].chomp
+    puts command[0..9].downcase
     if command[0..6].downcase == "rpncalc"
       tempcalc = RPNCalculator.new
       response = tempcalc.evaluate(command[8..-1]).to_s + "."
+    elsif command[0..9].downcase == "makechange"
+      response = "Here are your coins: " + Changer.make_change(command[11..-1]).to_s + "."
     elsif command == "help"
-      response = "Valid commands are rpncalc, help."
+      response = "Valid commands are rpncalc, makechange, and help."
     else
       response = ("I don't understand \"#{command}\".")
     end
