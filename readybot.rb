@@ -30,19 +30,26 @@ until irc_server.eof? do
         tempcalc = RPNCalculator.new
         response = tempcalc.evaluate(command[8..-1]).to_s + "."
       end
+
     elsif command[0..9].downcase == "makechange"
       if command[-1] == "e" then
         response = "To use makechange try makechange [number]."
       else
-        response = "Here are your coins: " + Changer.make_change(command[11..-1]).to_s + "."
+        response = "Here are your bills/coins: " + Changer.make_change(command[11..-1]).to_s + "."
       end
+
+    elsif command[0..4] == "leave"
+      response = "Insufficient permissions to force me to leave."
+
+    elsif command[0..9] == "sudo leave"
+      irc_server.puts "PRIVMSG #{channel} :wow fine"
+      quit
 
     elsif command == "help"
       response = "Valid commands are rpncalc, makechange, and help."
 
     else
       response = ("I don't understand \"#{command}\".")
-
     end
     
     response << " Why was I programmed to feel pain?" if rand(10) == 9 
@@ -50,5 +57,8 @@ until irc_server.eof? do
   elsif msg.include? "ping"
     irc_server.puts msg.gsub("ping", "PONG")
     puts "pong"
+  elsif msg.include? "pong"
+    irc_server.puts msg.gsub("pong", "PING")
+    puts "ping"
   end
 end
