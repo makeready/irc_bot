@@ -24,11 +24,18 @@ until irc_server.eof? do
     puts command[0..9].downcase
 
     if command[0..6].downcase == "rpncalc"
-      tempcalc = RPNCalculator.new
-      response = tempcalc.evaluate(command[8..-1]).to_s + "."
-
+      if command[-1] == "c" then
+        response = "To use rpncalc try rpncalc followed by numbers and operators (+-/*) separated by spaces."
+      elsif
+        tempcalc = RPNCalculator.new
+        response = tempcalc.evaluate(command[8..-1]).to_s + "."
+      end
     elsif command[0..9].downcase == "makechange"
-      response = "Here are your coins: " + Changer.make_change(command[11..-1]).to_s + "."
+      if command[-1] == "e" then
+        response = "To use makechange try makechange [number]."
+      else
+        response = "Here are your coins: " + Changer.make_change(command[11..-1]).to_s + "."
+      end
 
     elsif command == "help"
       response = "Valid commands are rpncalc, makechange, and help."
