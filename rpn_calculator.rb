@@ -1,7 +1,7 @@
 class RPNCalculator < Array
 
   def executecommand(operation)
-    raise Exception, 'calculator is empty' unless self.size > 0
+    raise Exception, 'calculator is empty' unless self.size > 1
     case operation
     when :+
       calcval = self[-2] + self[-1]

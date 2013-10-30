@@ -16,11 +16,11 @@ irc_server.puts "NICK #{name}"
 irc_server.puts "JOIN #{channel}"
 
 until irc_server.eof? do
-  msg = irc_server.gets.downcase
+  msg = irc_server.gets.downcase.strip
   puts msg
 
   if msg.include? sys and msg.include? (greeting.downcase)
-    command = msg[msg.index(" :")+11..-1].chomp
+    command = msg[msg.index(" :")+11..-1]
     puts command[0..9].downcase
 
     if command[0..6].downcase == "rpncalc"
@@ -40,5 +40,8 @@ until irc_server.eof? do
     
     response << " Why was I programmed to feel pain?" if rand(10) == 9 
     irc_server.puts "PRIVMSG #{channel} :#{response}"
+  elsif msg.include? "ping"
+    irc_server.puts msg.gsub("ping", "PONG")
+    puts "pong"
   end
 end
