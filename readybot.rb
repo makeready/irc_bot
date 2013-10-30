@@ -96,6 +96,7 @@ class ReadyBot
   def interact
     until @irc_server.eof? || quitting do
       msg = @irc_server.gets.downcase.strip
+      puts msg
 
       if (msg.include?(sys_prefix)) && (msg.include?(greeting))
         isolate_keyword_and_arguments(msg)
