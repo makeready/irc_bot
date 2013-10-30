@@ -1,19 +1,39 @@
 require "socket"
 require "./rpn_calculator"
 require "./make_change"
+require 'net/http'
+require 'rexml/document'
+require 'date'
 
 server = "chat.freenode.net"
 port = "6667"
 name = "ReadyBot"
-channel = "#bitmaker"
+channel = "#bitmakerlabs"
 sys = "privmsg #{channel} :"
 greeting = "readybot "
+nbakey = "ukesef6h6482qnf5azfdmpz6"
+nbaurl = "http://api.sportsdatallc.org/nba-t3/games/2013/reg/schedule.xml?api_key=#{nbakey}"
+todays_date = Date.today.to_s
+response = ""
+hometeam = ""
+awayteam = ""
 
+puts "Loading NBA schedule data..."
+
+nbadata = Net::HTTP.get_response(URI.parse(nbaurl)).body
+
+doc = REXML::Document.new(nbadata)
+
+puts "Connecting to IRC..."
 irc_server = TCPSocket.open(server, port)
 
 irc_server.puts "USER readybot 0 * ReadyBot"
 irc_server.puts "NICK #{name}"
 irc_server.puts "JOIN #{channel}"
+
+
+
+
 
 until irc_server.eof? do
   msg = irc_server.gets.downcase.strip
@@ -45,8 +65,23 @@ until irc_server.eof? do
       irc_server.puts "PRIVMSG #{channel} :wow fine"
       quit
 
+    elsif command[0..2] == "nba"
+      response = "Today's games: "
+      doc.elements.each("league/season-schedule/games/game") do |game|
+        if game.attributes["scheduled"][0..9] == todays_date
+          game.elements.each do |element|
+            hometeam = element.attributes["alias"] if element.name == "home"
+            awayteam = element.attributes["alias"] if element.name == "away"
+          end
+          response << "#{awayteam} at #{hometeam}, "
+        end
+      end
+      response.chop!.chop!
+      response << "."
+      response << " Go Raptors!" if response.include?("TOR")
+
     elsif command == "help"
-      response = "Valid commands are rpncalc, makechange, and help."
+      response = "Valid commands are rpncalc, makechange, nba, leave, and help."
 
     else
       response = ("I don't understand \"#{command}\".")
