@@ -80,6 +80,9 @@ until irc_server.eof? do
       response << "."
       response << " Go Raptors!" if response.include?("TOR")
 
+    elsif command[0..2] == "nhl"
+      response = "Hockey sure is an activity that people enjoy watching. Yep..."
+
     elsif command == "help"
       response = "Valid commands are rpncalc, makechange, nba, leave, and help."
 
